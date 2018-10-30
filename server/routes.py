@@ -1,5 +1,5 @@
-from server import api, app
+from server import api, application
 
-@app.route('/')
+@application.route('/')
 def home():
     return "Welcome to Seefood Server!"

@@ -12,3 +12,7 @@
 3. Install python dependencies (within project root directory && virtualenv activated): `pip install -r requirements.txt`
 4. Run flask server (with virtualenv activated): `python run.py`
 5. In your favorite Browser, navigate to http://0.0.0.0:5000 to be welcomed by the server
+
+## Run in Production
+1. `cd SeefoodServer/`
+2. `gunicorn --bind 0.0.0.0:8000 wsgi`
