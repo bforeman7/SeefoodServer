@@ -1,3 +1,4 @@
 *.pyc
 seefood-venv/
 .vscode/
+*.env
