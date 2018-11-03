@@ -1,5 +1,7 @@
 from server import api, application
 from flask import render_template, request, jsonify
+## import is used to create tables
+from ImageModel import ImageModel
 
 @application.route("/", methods=["GET"])
 def home():
