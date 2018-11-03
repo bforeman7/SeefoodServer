@@ -1,6 +1,18 @@
 from server import api, application
-from ImageResource import Image
+from flask import render_template, request, jsonify
 
-@application.route('/')
+@application.route("/", methods=["GET"])
 def home():
-    return "Welcome to Seefood Server!"
+    return render_template("index.html")
+
+@application.route("/images", methods=["POST"])
+def post_images():
+    if request.method == "POST" and "images" in request.files:
+        images = request.files.getlist("images")
+
+        for image in images:
+            print image.filename
+
+        return jsonify(msg="placeholder for response"), 201
+
+    return jsonify(msg="'images' cannot be left blank"), 400
