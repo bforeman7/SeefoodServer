@@ -5,6 +5,11 @@ from os.path import join, dirname, realpath
 ## import is used to create tables
 from ImageModel import ImageModel
 
+## Used for image processing and conversion
+from PIL import Image
+import server
+import os
+
 ## Entry point to API
 @application.route("/", methods=["GET"])
 def home():
@@ -23,17 +28,38 @@ def post_images():
         elif "time_taken" not in request.form:
             return jsonify(msg="'time_taken' cannot be left blank."), 400
         
-        #stuff we need
+        # get the image
         image = request.files.get("image")
         time =request.form.get("time_taken")
- 
-        ## DO IMAGE CONVERSION HERE
 
-        ## saves image to statics
+        # save the image to the server
         image_name = secure_filename(image.filename)
-        image.save(UPLOADS_PATH + image_name)
+        path = UPLOADS_PATH + image_name
+        image.save(path)
 
-        return jsonify(msg="Will place return stuff later"), 201
+        # send image to seefood
+        if server.seefoodWrapper.isReady() == False:
+            while server.seefoodWrapper.isReady() == False:
+                server.seefoodWrapper.pollForReady()
+                break
+        
+        # Seefood AI can take .bmp, .jpg, .png, etc. no need to convert. We can filter out images on app before
+        # they are sent to the server
+        confidences = server.seefoodWrapper.sendImage(path)
+
+        # convert the image for server gallery
+        tempImg = Image.open(path)
+        new_img = tempImg.resize((320, 320))
+        os.remove(path)
+
+        truncName = image_name.split(".")
+        newName = truncName[0] + '.png'
+        newNamePath = path + newName
+        new_img.save(newNamePath, 'png')
+
+        imageModel = ImageModel(truncName[0], time, confidences[0], confidences[1], newNamePath)
+
+        return jsonify(msg="Your food confidence rating is: " + confidences[0] + " " + confidences[1]), 201
 
 @application.route("/images", methods=["GET"])
 def get_images():
