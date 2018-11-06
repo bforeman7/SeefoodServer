@@ -4,3 +4,4 @@ seefood-venv/
 *.png
 *.jpg
 *.jpeg
+server/seefood/saved_model
