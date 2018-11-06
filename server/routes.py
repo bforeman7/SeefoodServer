@@ -20,7 +20,8 @@ def home():
 def post_images():
     if request.method == "POST":
        #path to static 
-        UPLOADS_PATH = join(dirname(realpath(__file__)), 'static/')
+        LOCAL_STATIC_PATH = 'static/'
+        UPLOADS_PATH = join(dirname(realpath(__file__)), LOCAL_STATIC_PATH)
 
         ## check to see if request body is filled
         if "image" not in request.files:
@@ -57,9 +58,12 @@ def post_images():
         newNamePath = UPLOADS_PATH + newName
         new_img.save(newNamePath, 'png')
 
-        imageModel = ImageModel(truncName[0], time, confidences[0], confidences[1], newNamePath)
+        img_return_path = LOCAL_STATIC_PATH + newName
+        
+        imageModel = ImageModel(truncName[0], time, confidences[0], confidences[1], img_return_path )
+        imageModel.save_to_database()
 
-        return jsonify(msg="Your food confidence rating is: " + confidences[0] + " " + confidences[1]), 201
+        return jsonify(imageModel.json()), 201
 
 @application.route("/images", methods=["GET"])
 def get_images():

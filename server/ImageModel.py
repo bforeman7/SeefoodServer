@@ -33,7 +33,7 @@ class ImageModel(database.Model):
             'second_class_confidence': self.second_class_confidence,
             'image_path': self.image_path
         }
-    
+
     def save_to_database(self):
         database.session.add(self)
         database.session.commit()

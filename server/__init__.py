@@ -14,6 +14,7 @@ application.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://{user}:{p
     port="5432",
     db="seefood_db")
 application.config['SECRET_KEY'] = "23rafsdfafsdfaerq2344q2wefasdt359tergascjfaw34oasdf"
+application.config['JSON_SORT_KEYS'] = False
 
 database = SQLAlchemy(application)
 
