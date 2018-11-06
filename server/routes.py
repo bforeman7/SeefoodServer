@@ -54,7 +54,7 @@ def post_images():
 
         truncName = image_name.split(".")
         newName = truncName[0] + '.png'
-        newNamePath = path + newName
+        newNamePath = UPLOADS_PATH + newName
         new_img.save(newNamePath, 'png')
 
         imageModel = ImageModel(truncName[0], time, confidences[0], confidences[1], newNamePath)
