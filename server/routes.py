@@ -33,38 +33,73 @@ def post_images():
         image = request.files.get("image")
         time =request.form.get("time_taken")
 
-        # save the image to the server
-        image_name = secure_filename(image.filename)
-        path = UPLOADS_PATH + image_name
-        image.save(path)
+        try:
+            # save the image to the server
+            image_name = secure_filename(image.filename)
+            path = UPLOADS_PATH + image_name
+            image.save(path)
 
-        # send image to seefood
-        if server.seefoodWrapper.isReady() == False:
-            while server.seefoodWrapper.isReady() == False:
-                server.seefoodWrapper.pollForReady()
-                break
-        
-        # Seefood AI can take .bmp, .jpg, .png, etc. no need to convert. We can filter out images on app before
-        # they are sent to the server
-        confidences = server.seefoodWrapper.sendImage(path)
+            # send image to seefood
+            if server.seefoodWrapper.isReady() == False:
+                while server.seefoodWrapper.isReady() == False:
+                    server.seefoodWrapper.pollForReady()
+                    break
+            
+            # Seefood AI can take .bmp, .jpg, .png, etc. no need to convert. We can filter out images on app before
+            # they are sent to the server
+            confidences = server.seefoodWrapper.sendImage(path)
 
-        # convert the image for server gallery
-        tempImg = Image.open(path)
-        new_img = tempImg.resize((320, 320))
-        os.remove(path)
+            # convert the image for server gallery
+            tempImg = Image.open(path)
+            new_img = tempImg.resize((320, 320))
+            os.remove(path)
 
-        truncName = image_name.split(".")
-        newName = truncName[0] + '.png'
-        newNamePath = UPLOADS_PATH + newName
-        new_img.save(newNamePath, 'png')
+            truncName = image_name.split(".")
+            newName = truncName[0] + '.png'
+            newNamePath = UPLOADS_PATH + newName
+            new_img.save(newNamePath, 'png')
 
-        img_return_path = LOCAL_STATIC_PATH + newName
-        
-        imageModel = ImageModel(truncName[0], time, confidences[0], confidences[1], img_return_path )
-        imageModel.save_to_database()
+            img_return_path = LOCAL_STATIC_PATH + newName
+            
+            imageModel = ImageModel(truncName[0], time, confidences[0], confidences[1], img_return_path )
+            imageModel.save_to_database()
 
-        return jsonify(imageModel.json()), 201
+            return jsonify(image=imageModel.json()), 201
+
+        except Exception as error:
+            return jsonify(msg="An error occured during image POST: {}".format(error)), 500
 
 @application.route("/images", methods=["GET"])
 def get_images():
-    pass
+
+    ## all the images in the database stored in a list
+    all_images = ImageModel.query.all()
+
+    if "start" not in request.args:
+        return jsonify(msg="'start' cannot be left blank."), 400
+    elif "end" not in request.args:
+        return jsonify(msg="'end' cannot be left blank."), 400
+
+    ## images returned are subset of all_images, i.e [start_index, end_index] C all_images
+    start = int(request.args.get("start"))
+    end = int(request.args.get("end"))
+
+    try:
+        #do checks to see if start_index and end_index are within all_images
+        requested_images = None
+        num_of_imgs = len(all_images)
+
+        if (start > num_of_imgs and end > num_of_imgs) or (start <= 0 and end <= 0):
+            requested_images = []
+        else:
+            if start <= 0: start = 1
+            if start > num_of_imgs: start = num_of_imgs
+            if end <= 0: end = 0
+            if end > num_of_imgs : end = num_of_imgs
+            
+            requested_images= all_images[start-1:end]
+
+        return jsonify({"images": [image.json() for image in requested_images]}), 200
+
+    except Exception as error:
+        return jsonify(msg="An error occured during image GET: {}".format(error)), 500
