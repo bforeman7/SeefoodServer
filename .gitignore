@@ -5,3 +5,4 @@ seefood-venv/
 *.jpg
 *.jpeg
 server/seefood/saved_model
+*.log
