@@ -12,9 +12,14 @@ class SeefoodWrapper:
     def __init__(self):
         self.ready = False
         # Spawns subprocess
-        self.process = pexpect.spawn("python  find_food.py", timeout=60)
-        print("SeefoodWrapper: Starting Seefood AI")
-        logger.write_info("SeefoodWrapper: Starting Seefood AI")
+        try:
+            self.process = pexpect.spawn("python  find_food.py", timeout=60)
+            print("SeefoodWrapper: Starting Seefood AI")
+            logger.write_info("SeefoodWrapper: Starting Seefood AI")
+            self.process.expect("Setup Complete")
+            logger.write_info("Setup Complete")
+        except:
+            logger.write_error("Setup Failed: {}".format(self.process.before))
 
     # Getter
     def isReady(self):
@@ -47,11 +52,17 @@ class SeefoodWrapper:
             self.process.send(string + "\n")
             
             # wait for checkpoint to telling us the image is being scanned
+            print (self.process.before)
+            print(self.process.after)
             self.process.expect("looking for food in " + string)
+            print (self.process.before)
+            print(self.process.after)
             print ("SeefoodWrapper: Hit 'looking for food' checkpoint")
             logger.write_info("SeefoodWrapper: Hit 'looking for food' checkpoint")
             # wait for checkpoint telling us image has completed scanning
             self.process.expect("Scanning Complete")
+            print (self.process.before)
+            print(self.process.after)
             print ("SeefoodWrapper: Hit 'Scanning Complete' checkpoint")
             logger.write_info("SeefoodWrapper: Hit 'Scanning Complete' checkpoint")
             # parse confidence ratings 

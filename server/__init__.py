@@ -29,13 +29,8 @@ import os
 
 # We will change these to be the pwd of where these live out on the server. For debugging purposes change these
 # to where your seefood AI dirctory lives (ex. do "pwd" in your seefood directory and copy paste that)
-os.chdir("/home/natedunn/Desktop/SeefoodServer/server/seefood")
-# this is here for debugging purposes to tell us whether we got to the seefood directory or not
-print(os.listdir("/home/natedunn/Desktop/SeefoodServer/server/seefood"))
 logger.write_info(os.listdir("/home/natedunn/Desktop/SeefoodServer/server/seefood"))
 
-from seefoodWrapper import SeefoodWrapper
 
-seefoodWrapper = SeefoodWrapper()
 database.init_app(application)
 database.create_all()

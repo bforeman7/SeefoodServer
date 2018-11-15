@@ -4,11 +4,27 @@ from werkzeug.utils import secure_filename
 from os.path import join, dirname, realpath
 ## import is used to create tables
 from ImageModel import ImageModel
+from seefoodWrapper import SeefoodWrapper
 
 ## Used for image processing and conversion
 from PIL import Image
 import server
 import os
+
+
+@application.before_first_request
+def startup():
+    os.chdir("/home/natedunn/Desktop/SeefoodServer/server/seefood")
+    # this is here for debugging purposes to tell us whether we got to the seefood directory or not
+    print(os.listdir("/home/natedunn/Desktop/SeefoodServer/server/seefood"))
+    global seefoodWrapper
+    seefoodWrapper = SeefoodWrapper()
+   
+@application.before_request
+def before_failure():
+     # send image to seefood
+    seefoodWrapper.pollForReady()
+        
 
 ## Entry point to API
 @application.route("/", methods=["GET"])
@@ -38,16 +54,10 @@ def post_images():
             image_name = secure_filename(image.filename)
             path = UPLOADS_PATH + image_name
             image.save(path)
-
-            # send image to seefood
-            if server.seefoodWrapper.isReady() == False:
-                while server.seefoodWrapper.isReady() == False:
-                    server.seefoodWrapper.pollForReady()
-                    break
             
             # Seefood AI can take .bmp, .jpg, .png, etc. no need to convert. We can filter out images on app before
             # they are sent to the server
-            confidences = server.seefoodWrapper.sendImage(path)
+            confidences = seefoodWrapper.sendImage(path)
 
             # convert the image for server gallery
             tempImg = Image.open(path)
