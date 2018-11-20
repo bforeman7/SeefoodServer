@@ -26,6 +26,7 @@ graph = tf.get_default_graph()
 x_input = graph.get_tensor_by_name('Input_xn/Placeholder:0')
 keep_prob = graph.get_tensor_by_name('Placeholder:0')
 class_scores = graph.get_tensor_by_name("fc8/fc8:0")
+print "Setup Complete"
 ######
 
 while True:

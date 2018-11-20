@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_restful import Api
-from flask_sqlalchemy import SQLAlchemy 
+from flask_sqlalchemy import SQLAlchemy
+from Logger import Logger
 
 application = Flask(__name__)
 api = Api(application)
@@ -17,9 +18,9 @@ application.config['SECRET_KEY'] = "23rafsdfafsdfaerq2344q2wefasdt359tergascjfaw
 application.config['JSON_SORT_KEYS'] = False
 
 database = SQLAlchemy(application)
+logger = Logger()
 
 from server import routes
-from seefoodWrapper import SeefoodWrapper
 import os
 
 ## Do not remove this piece, it is very important. Python scripts will not run correcly
@@ -28,10 +29,8 @@ import os
 
 # We will change these to be the pwd of where these live out on the server. For debugging purposes change these
 # to where your seefood AI dirctory lives (ex. do "pwd" in your seefood directory and copy paste that)
-os.chdir("/home/brandon/Server/SeefoodServer/server/seefood")
-# this is here for debugging purposes to tell us whether we got to the seefood directory or not
-print(os.listdir("/home/brandon/Server/SeefoodServer/server/seefood"))
-seefoodWrapper = SeefoodWrapper()
+logger.write_info(os.listdir("/home/ubuntu/SeefoodServer/server/seefood"))
+
 
 database.init_app(application)
 database.create_all()
