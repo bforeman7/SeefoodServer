@@ -5,6 +5,7 @@ from os.path import join, dirname, realpath
 ## import is used to create tables
 from ImageModel import ImageModel
 from seefoodWrapper import SeefoodWrapper
+from server import logger
 
 ## Used for image processing and conversion
 from PIL import Image
@@ -14,16 +15,16 @@ import os
 
 @application.before_first_request
 def startup():
-    os.chdir("/home/natedunn/Desktop/SeefoodServer/server/seefood")
+    os.chdir("/home/ubuntu/SeefoodServer/server/seefood")
     # this is here for debugging purposes to tell us whether we got to the seefood directory or not
-    print(os.listdir("/home/natedunn/Desktop/SeefoodServer/server/seefood"))
+    print(os.listdir("/home/ubuntu/SeefoodServer/server/seefood"))
     global seefoodWrapper
     seefoodWrapper = SeefoodWrapper()
    
-@application.before_request
-def before_failure():
+#@application.before_request
+#def before_failure():
      # send image to seefood
-    seefoodWrapper.pollForReady()
+#    seefoodWrapper.pollForReady()
         
 
 ## Entry point to API
@@ -50,7 +51,9 @@ def post_images():
         time =request.form.get("time_taken")
 
         try:
-            # save the image to the server
+	    seefoodWrapper.pollForReady()
+
+	   # save the image to the server
             image_name = secure_filename(image.filename)
             path = UPLOADS_PATH + image_name
             image.save(path)
@@ -58,10 +61,9 @@ def post_images():
             # Seefood AI can take .bmp, .jpg, .png, etc. no need to convert. We can filter out images on app before
             # they are sent to the server
             confidences = seefoodWrapper.sendImage(path)
-
+	    logger.write_info("routes.py:Got confidence ratings " + confidences[0] + " " +confidences[1])
             # convert the image for server gallery
-            tempImg = Image.open(path)
-            new_img = tempImg.resize((320, 320))
+            new_img = Image.open(path)
             os.remove(path)
 
             truncName = image_name.split(".")
@@ -69,14 +71,19 @@ def post_images():
             newNamePath = UPLOADS_PATH + newName
             new_img.save(newNamePath, 'png')
 
+	    logger.write_info("routes.py:Sucessfully re-saved image")
+
             img_return_path = LOCAL_STATIC_PATH + newName
             
             imageModel = ImageModel(truncName[0], time, confidences[0], confidences[1], img_return_path )
+	    logger.write_info("routes.py:Created imageModel")
             imageModel.save_to_database()
+	    logger.write_info("routes.py:Saved to database")
 
             return jsonify(image=imageModel.json()), 201
 
         except Exception as error:
+	    logger.write_error(error)
             return jsonify(msg="An error occured during image POST: {}".format(error)), 500
 
 @application.route("/images", methods=["GET"])

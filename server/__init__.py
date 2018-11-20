@@ -29,7 +29,7 @@ import os
 
 # We will change these to be the pwd of where these live out on the server. For debugging purposes change these
 # to where your seefood AI dirctory lives (ex. do "pwd" in your seefood directory and copy paste that)
-logger.write_info(os.listdir("/home/natedunn/Desktop/SeefoodServer/server/seefood"))
+logger.write_info(os.listdir("/home/ubuntu/SeefoodServer/server/seefood"))
 
 
 database.init_app(application)

@@ -38,6 +38,8 @@ class SeefoodWrapper:
         except:
             print("SeefoodWrapper: Couldn't poll for AI readiness")
             logger.write_error("SeefoodWrapper: Couldn't poll for AI readiness")
+	    logger.write_error(self.process.before)
+	    logger.write_error(self.process.after)
 
     # Takes in a path to an image, sends it to the Seefood AI, checkpoints each step of the conversion and returns
     # two floats which are the two confidence ratings of the Seefood AI.
