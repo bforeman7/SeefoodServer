@@ -79,7 +79,7 @@ def post_images():
 
             img_return_path = LOCAL_STATIC_PATH + newName
             
-            imageModel = ImageModel(truncName[0], time, confidences[0], confidences[1], img_return_path )
+            imageModel = ImageModel(truncName[0], time, confidences[0], confidences[1], img_return_path, orientation )
 	    logger.write_info("routes.py:Created imageModel")
             imageModel.save_to_database()
 	    logger.write_info("routes.py:Saved to database")
