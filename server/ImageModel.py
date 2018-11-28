@@ -1,7 +1,7 @@
 from server import database
 
 class ImageModel(database.Model):
-    
+
     __tablename__ = 'images'
 
     ## images table columns / imageModel object attributes
@@ -11,13 +11,15 @@ class ImageModel(database.Model):
     first_class_confidence = database.Column(database.Float)
     second_class_confidence = database.Column(database.Float)
     image_path = database.Column(database.String)
+    image_orientation = database.Column(database.Integer)
 
-    def __init__(self, name, date_taken, first_class_confidence, second_class_confidence, image_path):
+    def __init__(self, name, date_taken, first_class_confidence, second_class_confidence, image_path, image_orientation):
         self.name=name
         self.date_taken=date_taken
         self.first_class_confidence=first_class_confidence
         self.second_class_confidence=second_class_confidence
         self.image_path=image_path
+        self.image_orientation = image_orientation
 
     #query db by id
     @classmethod
@@ -31,7 +33,8 @@ class ImageModel(database.Model):
             'date_taken': self.date_taken,
             'first_class_confidence': self.first_class_confidence,
             'second_class_confidence': self.second_class_confidence,
-            'image_path': self.image_path
+            'image_path': self.image_path,
+            'image_orientation' : self.image_orientation
         }
 
     def save_to_database(self):
@@ -41,3 +44,4 @@ class ImageModel(database.Model):
     def delete_from_database(self):
         database.session.delete(self)
         database.session.commit()
+

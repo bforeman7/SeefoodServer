@@ -40,15 +40,19 @@ def post_images():
         LOCAL_STATIC_PATH = 'static/'
         UPLOADS_PATH = join(dirname(realpath(__file__)), LOCAL_STATIC_PATH)
 
-        ## check to see if request body is filled
+	## check to see if request body is filled
         if "image" not in request.files:
             return jsonify(msg="'image' cannot be left blank."), 400
         elif "time_taken" not in request.form:
             return jsonify(msg="'time_taken' cannot be left blank."), 400
-        
+        elif "image_orientation" not in request.form:
+            return jsonify(msg="'image_orientation' cannot be left blank."), 400
+
         # get the image
         image = request.files.get("image")
         time =request.form.get("time_taken")
+        orientation = request.form.get("image_orientation")        
+
 
         try:
 	    seefoodWrapper.pollForReady()
