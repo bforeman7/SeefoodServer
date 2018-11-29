@@ -39,7 +39,7 @@ def post_images():
        #path to static 
         LOCAL_STATIC_PATH = 'static/'
         UPLOADS_PATH = join(dirname(realpath(__file__)), LOCAL_STATIC_PATH)
-
+        DATABASE_SIZE = 10
 	## check to see if request body is filled
         if "image" not in request.files:
             return jsonify(msg="'image' cannot be left blank."), 400
@@ -79,6 +79,12 @@ def post_images():
 
             img_return_path = LOCAL_STATIC_PATH + newName
             
+            # ENFORCE DATABASE SIZE
+            all_images = ImageModel.query.all()
+            if len(all_images) == DATABASE_SIZE:
+                first_image = all_images[0]
+                first_image.delete_from_database()
+
             imageModel = ImageModel(truncName[0], time, confidences[0], confidences[1], img_return_path, orientation )
 	    logger.write_info("routes.py:Created imageModel")
             imageModel.save_to_database()
