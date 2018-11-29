@@ -15,9 +15,9 @@ import os
 
 @application.before_first_request
 def startup():
-    os.chdir("/home/natedunn/Desktop/SeefoodServer/server/seefood")
+    os.chdir("/home/ubuntu/SeefoodServer/server/seefood")
     # this is here for debugging purposes to tell us whether we got to the seefood directory or not
-    print(os.listdir("/home/natedunn/Desktop/SeefoodServer/server/seefood"))
+    print(os.listdir("/home/ubuntu/SeefoodServer/server/seefood"))
     global seefoodWrapper
     seefoodWrapper = SeefoodWrapper()
    
