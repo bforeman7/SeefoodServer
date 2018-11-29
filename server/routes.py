@@ -131,12 +131,12 @@ def delete_image():
         if "id" not in request.args:
             return jsonify(msg="'id' cannot be left blank."), 400
         
-    try:
-        img_id = request.args.get("id")
-        image = ImageModel.find_by_id(img_id)
-        if image:
-            image.delete_from_database()
-            return jsonify(msg="Image with id '{}' has been successfully deleted.".format(img_id)), 200
-        return jsonify(msg="id '{}' does not exist.".format(img_id)), 400
-    except Exception as error:
-        return jsonify(msg="An error occured during image DELETE: {}".format(error)), 500
+        try:
+            img_id = request.args.get("id")
+            image = ImageModel.find_by_id(img_id)
+            if image:
+                image.delete_from_database()
+                return jsonify(msg="Image with id '{}' has been successfully deleted.".format(img_id)), 200
+            return jsonify(msg="id '{}' does not exist.".format(img_id)), 400
+        except Exception as error:
+            return jsonify(msg="An error occured during image DELETE: {}".format(error)), 500
