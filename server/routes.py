@@ -15,9 +15,9 @@ import os
 
 @application.before_first_request
 def startup():
-    os.chdir("/home/ubuntu/SeefoodServer/server/seefood")
+    os.chdir("/home/natedunn/Desktop/SeefoodServer/server/seefood")
     # this is here for debugging purposes to tell us whether we got to the seefood directory or not
-    print(os.listdir("/home/ubuntu/SeefoodServer/server/seefood"))
+    print(os.listdir("/home/natedunn/Desktop/SeefoodServer/server/seefood"))
     global seefoodWrapper
     seefoodWrapper = SeefoodWrapper()
    
@@ -124,3 +124,19 @@ def get_images():
 
     except Exception as error:
         return jsonify(msg="An error occured during image GET: {}".format(error)), 500
+
+@application.route("/image", methods=["DELETE"])
+def delete_image():
+    if request.method == "DELETE":
+        if "id" not in request.args:
+            return jsonify(msg="'id' cannot be left blank."), 400
+        
+    try:
+        img_id = request.args.get("id")
+        image = ImageModel.find_by_id(img_id)
+        if image:
+            image.delete_from_database()
+            return jsonify(msg="Image with id '{}' has been successfully deleted.".format(img_id)), 200
+        return jsonify(msg="id '{}' does not exist.".format(img_id)), 400
+    except Exception as error:
+        return jsonify(msg="An error occured during image DELETE: {}".format(error)), 500
