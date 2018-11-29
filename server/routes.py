@@ -39,7 +39,7 @@ def post_images():
        #path to static 
         LOCAL_STATIC_PATH = 'static/'
         UPLOADS_PATH = join(dirname(realpath(__file__)), LOCAL_STATIC_PATH)
-        DATABASE_SIZE = 10
+        DATABASE_SIZE = 100
 	## check to see if request body is filled
         if "image" not in request.files:
             return jsonify(msg="'image' cannot be left blank."), 400
