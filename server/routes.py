@@ -39,7 +39,7 @@ def post_images():
        #path to static 
         LOCAL_STATIC_PATH = 'static/'
         UPLOADS_PATH = join(dirname(realpath(__file__)), LOCAL_STATIC_PATH)
-
+        DATABASE_SIZE = 100
 	## check to see if request body is filled
         if "image" not in request.files:
             return jsonify(msg="'image' cannot be left blank."), 400
@@ -79,6 +79,12 @@ def post_images():
 
             img_return_path = LOCAL_STATIC_PATH + newName
             
+            # ENFORCE DATABASE SIZE
+            all_images = ImageModel.query.all()
+            if len(all_images) == DATABASE_SIZE:
+                first_image = all_images[0]
+                first_image.delete_from_database()
+
             imageModel = ImageModel(truncName[0], time, confidences[0], confidences[1], img_return_path, orientation )
 	    logger.write_info("routes.py:Created imageModel")
             imageModel.save_to_database()
@@ -124,3 +130,19 @@ def get_images():
 
     except Exception as error:
         return jsonify(msg="An error occured during image GET: {}".format(error)), 500
+
+@application.route("/image", methods=["DELETE"])
+def delete_image():
+    if request.method == "DELETE":
+        if "id" not in request.args:
+            return jsonify(msg="'id' cannot be left blank."), 400
+        
+        try:
+            img_id = request.args.get("id")
+            image = ImageModel.find_by_id(img_id)
+            if image:
+                image.delete_from_database()
+                return jsonify(msg="Image with id '{}' has been successfully deleted.".format(img_id)), 200
+            return jsonify(msg="id '{}' does not exist.".format(img_id)), 400
+        except Exception as error:
+            return jsonify(msg="An error occured during image DELETE: {}".format(error)), 500
