@@ -31,3 +31,6 @@
 * In the top right of the screen, click on the dropdown titled *no environment* and select *Seefood-Development*
 * The endpoints that can be tested are located under the folder *Seefood-API* on the left side of the screen
 * **Make sure the server is running** and test the endpoints accordingly. Instructions on how to test each endpoints are located in their description.
+
+Additional documentation for the full application and server:
+https://docs.google.com/document/d/1sWhShVgpn9bVdvPXGpjd1iFVIYPWAeU967ElWOJ5Omw/edit?usp=sharing
